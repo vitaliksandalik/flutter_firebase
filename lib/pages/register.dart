@@ -1,9 +1,9 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import 'home.dart';
 
 class RegisterPage extends StatefulWidget {
   final VoidCallback showLoginPage;
@@ -37,16 +37,66 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Future signUp() async {
     if (passwordConfirmed()) {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
+
+      try {
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: _emailController.text.trim(),
-          password: _passwordController.text.trim());
+          password: _passwordController.text.trim(),
+        );
+        await addUserDetails(
+          FirebaseAuth.instance.currentUser!.uid,
+          _firstNameController.text.trim(),
+          _lastNameController.text.trim(),
+          _emailController.text.trim(),
+          int.parse(_ageController.text.trim()),
+        );
+        // ignore: use_build_context_synchronously
+        Navigator.of(context).pop();
+        // ignore: use_build_context_synchronously
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const HomePage()));
+      } catch (e) {
+        // ignore: use_build_context_synchronously
+        Navigator.of(context).pop();
+        showDialog(
+          // ignore: use_build_context_synchronously
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Registration Failed'),
+            content: Text(e.toString()),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Error'),
+          content: const Text('Passwords do not match.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
     }
-    addUserDetails(
-        FirebaseAuth.instance.currentUser!.uid,
-        _firstNameController.text.trim(),
-        _lastNameController.text.trim(),
-        _emailController.text.trim(),
-        int.parse(_ageController.text.trim()));
   }
 
   Future addUserDetails(
@@ -84,23 +134,23 @@ class _RegisterPageState extends State<RegisterPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     height: 50,
                   ),
                   Text('Hello There!',
                       style: GoogleFonts.bebasNeue(
                         fontSize: 52,
                       )),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
-                  Text(
+                  const Text(
                     'Register below with your details',
                     style: TextStyle(
                       fontSize: 20,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 50,
                   ),
                   Padding(
@@ -114,13 +164,13 @@ class _RegisterPageState extends State<RegisterPage> {
                         padding: const EdgeInsets.only(left: 20.0),
                         child: TextField(
                           controller: _firstNameController,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                               border: InputBorder.none, hintText: 'First Name'),
                         ),
                       ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   Padding(
@@ -134,13 +184,13 @@ class _RegisterPageState extends State<RegisterPage> {
                         padding: const EdgeInsets.only(left: 20.0),
                         child: TextField(
                           controller: _lastNameController,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                               border: InputBorder.none, hintText: 'Last Name'),
                         ),
                       ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   Padding(
@@ -154,13 +204,13 @@ class _RegisterPageState extends State<RegisterPage> {
                         padding: const EdgeInsets.only(left: 20.0),
                         child: TextField(
                           controller: _ageController,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                               border: InputBorder.none, hintText: 'Age'),
                         ),
                       ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   Padding(
@@ -174,13 +224,13 @@ class _RegisterPageState extends State<RegisterPage> {
                         padding: const EdgeInsets.only(left: 20.0),
                         child: TextField(
                           controller: _emailController,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                               border: InputBorder.none, hintText: 'Email'),
                         ),
                       ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   Padding(
@@ -195,13 +245,13 @@ class _RegisterPageState extends State<RegisterPage> {
                         child: TextField(
                           obscureText: true,
                           controller: _passwordController,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                               border: InputBorder.none, hintText: 'Password'),
                         ),
                       ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   Padding(
@@ -216,14 +266,14 @@ class _RegisterPageState extends State<RegisterPage> {
                         child: TextField(
                           obscureText: true,
                           controller: _confirmPasswordController,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                               border: InputBorder.none,
                               hintText: 'Confirm Password'),
                         ),
                       ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   Padding(
@@ -231,11 +281,11 @@ class _RegisterPageState extends State<RegisterPage> {
                     child: GestureDetector(
                       onTap: signUp,
                       child: Container(
-                          padding: EdgeInsets.all(20),
+                          padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
                               color: Colors.deepPurple,
                               borderRadius: BorderRadius.circular(12)),
-                          child: Center(
+                          child: const Center(
                               child: Text(
                             'Sign Up',
                             style: TextStyle(
@@ -245,17 +295,17 @@ class _RegisterPageState extends State<RegisterPage> {
                           ))),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 25,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Already have an account? ',
+                      const Text('Already have an account? ',
                           style: TextStyle(fontWeight: FontWeight.bold)),
                       GestureDetector(
                         onTap: widget.showLoginPage,
-                        child: Text(
+                        child: const Text(
                           'Login here',
                           style: TextStyle(
                               color: Colors.blue, fontWeight: FontWeight.bold),

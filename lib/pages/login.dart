@@ -1,12 +1,10 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'forgot_password_page.dart';
+import 'forgot_password.dart';
+import 'home.dart';
 
 class LoginPage extends StatefulWidget {
   final VoidCallback showRegisterPage;
@@ -22,17 +20,29 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
 
   Future signIn() async {
-    showDialog(
+    try {
+      showDialog(
         context: context,
-        builder: (context) {
-          return Center(child: CircularProgressIndicator());
-        });
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
 
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
-        password: _passwordController.text.trim());
+        password: _passwordController.text.trim(),
+      );
 
-    Navigator.of(context).pop();
+      Future.microtask(() {
+        Navigator.of(context).pop();
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const HomePage()));
+      });
+    } on FirebaseAuthException catch (e) {
+      Navigator.of(context).pop();
+      if (kDebugMode) {
+        print(e);
+      }
+    }
   }
 
   @override
@@ -52,27 +62,27 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.phone_iphone,
+                  const Icon(
+                    Icons.currency_bitcoin,
                     size: 100,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 50,
                   ),
                   Text('Hello again!',
                       style: GoogleFonts.bebasNeue(
                         fontSize: 52,
                       )),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
-                  Text(
+                  const Text(
                     'Welcome back, you\'ve been missed!',
                     style: TextStyle(
                       fontSize: 20,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 50,
                   ),
                   Padding(
@@ -86,13 +96,13 @@ class _LoginPageState extends State<LoginPage> {
                         padding: const EdgeInsets.only(left: 20.0),
                         child: TextField(
                           controller: _emailController,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                               border: InputBorder.none, hintText: 'Email'),
                         ),
                       ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   Padding(
@@ -107,13 +117,13 @@ class _LoginPageState extends State<LoginPage> {
                         child: TextField(
                           obscureText: true,
                           controller: _passwordController,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                               border: InputBorder.none, hintText: 'Password'),
                         ),
                       ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   Padding(
@@ -128,7 +138,7 @@ class _LoginPageState extends State<LoginPage> {
                                   return ForgotPasswordPage();
                                 }));
                               },
-                              child: Text(
+                              child: const Text(
                                 'Forgot Password?',
                                 style: TextStyle(
                                   color: Colors.blue,
@@ -137,7 +147,7 @@ class _LoginPageState extends State<LoginPage> {
                               ))
                         ]),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   Padding(
@@ -149,7 +159,7 @@ class _LoginPageState extends State<LoginPage> {
                           decoration: BoxDecoration(
                               color: Colors.deepPurple,
                               borderRadius: BorderRadius.circular(12)),
-                          child: Center(
+                          child: const Center(
                               child: Text(
                             'Sign In',
                             style: TextStyle(
@@ -159,18 +169,18 @@ class _LoginPageState extends State<LoginPage> {
                           ))),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 25,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Not a member?',
+                      const Text('Not a member?',
                           style: TextStyle(fontWeight: FontWeight.bold)),
                       GestureDetector(
                         onTap: widget.showRegisterPage,
-                        child: Text(
-                          'Register now',
+                        child: const Text(
+                          ' Register now',
                           style: TextStyle(
                               color: Colors.blue, fontWeight: FontWeight.bold),
                         ),
